@@ -19,7 +19,7 @@ export const TARGET_ASSETS: AssetConfig[] = [
     name: 'AVAX',
     type: 'coin',
     network: 'evm',
-    rpcUrl: process.env.RPC_AVAX || 'https://api.avax.network/ext/bc/C/rpc', // Public RPC chính thức của Avalanche
+    rpcUrl: process.env.RPC_AVAX || 'https://avalanche.drpc.org', // Public RPC chính thức của Avalanche
     address: process.env.WALLET_EVM || '',
   },
   {
