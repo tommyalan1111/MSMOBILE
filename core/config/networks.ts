@@ -1,4 +1,6 @@
 // core/config/networks.ts
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export interface AssetConfig {
   symbol: string;
@@ -17,7 +19,7 @@ export const TARGET_ASSETS: AssetConfig[] = [
     name: 'AVAX',
     type: 'coin',
     network: 'evm',
-    rpcUrl: process.env.RPC_AVAX || 'https://rpc.ankr.com/avalanche',
+    rpcUrl: process.env.RPC_AVAX || 'https://api.avax.network/ext/bc/C/rpc', // Public RPC chính thức của Avalanche
     address: process.env.WALLET_EVM || '',
   },
   {
@@ -25,7 +27,7 @@ export const TARGET_ASSETS: AssetConfig[] = [
     name: 'USDT (ERC20)',
     type: 'token',
     network: 'evm-token',
-    rpcUrl: process.env.RPC_ETH || 'https://rpc.ankr.com/eth',
+    rpcUrl: process.env.RPC_ETH || 'https://ethereum.publicnode.com', // PublicNode không cần API key
     contractAddress: '0xdac17f958d2ee523a2206206994597c13d831ec7',
     address: process.env.WALLET_EVM || '',
   },
@@ -34,7 +36,7 @@ export const TARGET_ASSETS: AssetConfig[] = [
     name: 'ETH (NATIVE)',
     type: 'coin',
     network: 'evm',
-    rpcUrl: process.env.RPC_ETH || 'https://rpc.ankr.com/eth',
+    rpcUrl: process.env.RPC_ETH || 'https://ethereum.publicnode.com', // PublicNode không cần API key
     address: process.env.WALLET_EVM || '',
   },
   {
@@ -50,7 +52,7 @@ export const TARGET_ASSETS: AssetConfig[] = [
     name: 'MATIC (NATIVE)',
     type: 'coin',
     network: 'evm',
-    rpcUrl: process.env.RPC_POLYGON || 'https://rpc.ankr.com/polygon',
+    rpcUrl: process.env.RPC_POLYGON || 'https://polygon-rpc.com', // Public RPC chính thức của Polygon
     address: process.env.WALLET_EVM || '',
   },
 ];

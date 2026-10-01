@@ -20,6 +20,10 @@
     "@wdio/spec-reporter": "^9.32.0",
     "appium": "^3.8.0",
     "appium-uiautomator2-driver": "^8.7.0",
+    "dotenv": "^18.0.5",
     "expect-webdriverio": "^7.0.0"
+  },
+  "dependencies": {
+    "ethers": "^6.17.0"
   }
 }

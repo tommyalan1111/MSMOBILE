@@ -13,13 +13,14 @@ export const config: WebdriverIO.Config = {
     exclude: [],
     maxInstances: 1,
     capabilities: [{
-        platformName: 'Android',
-        'appium:deviceName': 'Android Emulator',
-        'appium:platformVersion': '14.0',
-        'appium:automationName': 'UiAutomator2',
-        'appium:app': '', // Đường dẫn file .apk của bạn (nếu có sẵn)
-        'appium:noReset': false,
-    }],
+    platformName: 'Android',
+    'appium:automationName': 'UiAutomator2',
+    'appium:deviceName': 'emulator-5554',
+    'appium:appPackage': 'io.moonstake.wallet',
+    'appium:appActivity': 'io.moonstake.wallet.MainActivity',
+    'appium:noReset': true,   // Giữ nguyên trạng thái đã đăng nhập như trong hình
+    'appium:fullReset': false,
+}],
     logLevel: 'info',
     bail: 0,
     waitforTimeout: 10000,
