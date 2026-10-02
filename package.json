@@ -25,5 +25,11 @@
   },
   "dependencies": {
     "ethers": "^6.17.0"
+  },
+  "allowScripts": {
+    "appium@3.8.0": true,
+    "edgedriver@6.3.1": true,
+    "esbuild@0.28.2": true,
+    "geckodriver@6.1.1": true
   }
 }
