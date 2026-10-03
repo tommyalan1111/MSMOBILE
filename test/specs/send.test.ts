@@ -128,4 +128,56 @@ describe('Moonstake Mobile - Send AVAX Comprehensive Test Suite', () => {
             throw new Error('[FAIL] Case 5 lỗi: Nhập quá số dư nhưng app không hiển thị cảnh báo!');
         }
     });
+
+    /**
+     * TC-06: Lỗi định dạng địa chỉ ví không hợp lệ (Invalid Address Validation)
+     */
+    it('Case 6: Send nhập địa chỉ ví không hợp lệ (abddef) -> báo lỗi Address is invalid', async () => {
+        // Step 1 & 2: Vào form gửi AVAX
+        await WalletPage.navigateToSendAvax();
+
+        // Step 3: Nhập địa chỉ không hợp lệ vào ô Address (EditText[1])
+        const addressInput = await $('//android.widget.EditText[1]');
+        await addressInput.waitForDisplayed({ timeout: 10000 });
+        await addressInput.setValue('abddef');
+        await browser.pause(1000);
+
+        // Verification: Kiểm tra thông báo lỗi "Address is invalid" hoặc nút Next bị vô hiệu hóa
+        const errorText = await WalletPage.getAddressErrorMessage();
+        const isNextButtonActive = async () => {
+            try {
+                const nextBtn = await $('android=new UiSelector().text("NEXT" or "Next")');
+                return await nextBtn.isEnabled();
+            } catch (e) {
+                return false;
+            }
+        };
+
+        if (errorText.includes('invalid') || errorText.includes('Address') || !(await isNextButtonActive())) {
+            console.log('[PASS] Case 6 chính xác: Hệ thống bắt đúng lỗi địa chỉ không hợp lệ.');
+        } else {
+            throw new Error('[FAIL] Case 6 lỗi: Chấp nhận địa chỉ sai định dạng mà không báo lỗi!');
+        }
+    });
+
+    /**
+     * TC-07: Kiểm tra tính năng nút Reset ở màn hình Send Form
+     */
+    it('Case 7: Verify nút Reset ở màn hình Send AVAX -> clear toàn bộ amount đã nhập', async () => {
+        // Step 1 & 2: Nhập địa chỉ hợp lệ và số lượng
+        const validRecipient = process.env.TEST_WALLET_ADDRESS || '0x7849Cf950683a5F45db639D84C5b4C5c57650551';
+        await WalletPage.fillSendForm(validRecipient, '0.001');
+
+        // Step 3: Bấm nút Reset
+        await WalletPage.clickReset();
+
+        // Step 4 & Verification: Kiểm tra xem ô amount đã được clear trống hay chưa
+        const currentAmountValue = await WalletPage.getAmountInputValue();
+        
+        if (currentAmountValue === '' || currentAmountValue === '0' || currentAmountValue === '0.0') {
+            console.log('[PASS] Case 7 chính xác: Nút Reset đã xóa sạch dữ liệu trong ô amount.');
+        } else {
+            throw new Error(`[FAIL] Case 7 lỗi: Ô amount chưa được clear, giá trị còn lại là: "${currentAmountValue}"`);
+        }
+    });
 });

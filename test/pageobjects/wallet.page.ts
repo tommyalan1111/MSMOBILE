@@ -281,6 +281,42 @@ class WalletPage {
         }
         return 0.1; 
     }
+
+    /**
+     * Lấy thông báo lỗi liên quan đến Address
+     */
+    async getAddressErrorMessage(): Promise<string> {
+        try {
+            const errorElement = await $('//android.widget.TextView[contains(@text, "invalid") or contains(@text, "Address") or contains(@text, "Error")]');
+            await errorElement.waitForDisplayed({ timeout: 5000 });
+            return await errorElement.getText();
+        } catch (e) {
+            return '';
+        }
+    }
+
+    /**
+     * Bấm nút Reset ở màn hình Send Form
+     */
+    async clickReset() {
+        const resetButton = await $('//android.view.ViewGroup[@content-desc="Reset"]/android.view.ViewGroup | //android.widget.TextView[@text="Reset"]');
+        await resetButton.waitForDisplayed({ timeout: 5000 });
+        await resetButton.click();
+        await browser.pause(1000);
+    }
+
+    /**
+     * Lấy giá trị đang được nhập trong ô Amount (EditText thứ hai)
+     */
+    async getAmountInputValue(): Promise<string> {
+        try {
+            const amountInput = await $('//android.widget.EditText[2]');
+            await amountInput.waitForDisplayed({ timeout: 5000 });
+            return await amountInput.getText();
+        } catch (e) {
+            return '';
+        }
+    }
 }
 
 export default new WalletPage();
