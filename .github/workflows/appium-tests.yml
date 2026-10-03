@@ -1,0 +1,74 @@
+name: Appium Android CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  test:
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Nâng từ '18' lên '20' theo yêu cầu của dependencies
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Appium & Drivers
+        run: |
+          npm install -g appium
+          appium driver update uiautomator2 || appium driver install uiautomator2
+
+      - name: Download APK from GitHub Releases
+        run: |
+          mkdir -p app
+          curl -L -o ./app/MoonstakeWallet.apk "https://github.com/tommyalan1111/MSMOBILE/releases/download/v1.0.0/MoonstakeWallet_v2.36.11_b1291_Mainnet_PRODUCTION.apk"
+
+      - name: Run Android Emulator & Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          TEST_WALLET_EMAIL: ${{ secrets.TEST_WALLET_EMAIL }}
+          TEST_WALLET_PASSWORD: ${{ secrets.TEST_WALLET_PASSWORD }}
+        with:
+          api-level: 29
+          target: default
+          arch: x86_64
+          profile: pixel_4
+          script: |
+            echo "Đang chờ thiết bị kết nối với adb..."
+            adb wait-device
+            
+            echo "Đang đợi Android boot hoàn tất..."
+            # Dùng adb shell lặp liên tục cho đến khi nhận được giá trị 1 từ hệ thống
+            while [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" != "1" ]; do
+              sleep 5
+            done
+            
+            echo "Máy ảo đã boot thành công 100%!"
+            
+            # --- NHÉT LỆNH CÀI ĐẶT APK VÀO ĐÂY ---
+            echo "Đang cài đặt ứng dụng Moonstake..."
+            adb install ./app/MoonstakeWallet_v2.36.11_b1291_Mainnet_PRODUCTION.apk 
+            
+            # Chạy test suite
+            npm run send
+
+      - name: Upload Allure Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results/
