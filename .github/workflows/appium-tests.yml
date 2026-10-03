@@ -48,22 +48,23 @@ jobs:
           arch: x86_64
           profile: pixel_4
           script: |
-            echo "Đang chờ thiết bị kết nối với adb..."
+            echo "Đang chờ adb kết nối với thiết bị ảo..."
+            # Lệnh này cực kỳ quan trọng để adb server kịp nhận diện emulator-5554
             adb wait-device
             
-            echo "Đang đợi Android boot hoàn tất..."
-            # Dùng adb shell lặp liên tục cho đến khi nhận được giá trị 1 từ hệ thống
-            while [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" != "1" ]; do
+            echo "Đang đợi Android boot hoàn tất 100%..."
+            # Dùng vòng lặp kiểm tra an toàn hơn, tránh văng lỗi exit code 1 làm sập job
+            while [ "$(adb shell getprop sys.boot_completed 2>&1 | tr -d '\r')" != "1" ]; do
+              echo "Máy ảo chưa sẵn sàng, đang đợi thêm 5 giây..."
               sleep 5
             done
             
-            echo "Máy ảo đã boot thành công 100%!"
+            echo "Máy ảo đã khởi động thành công hoàn toàn!"
             
-            # --- NHÉT LỆNH CÀI ĐẶT APK VÀO ĐÂY ---
-            echo "Đang cài đặt ứng dụng Moonstake..."
-            adb install ./app/MoonstakeWallet_v2.36.11_b1291_Mainnet_PRODUCTION.apk 
+            echo "Đang cài đặt ứng dụng Moonstake từ file đã tải..."
+            adb install ./app/MoonstakeWallet.apk 
             
-            # Chạy test suite
+            echo "Bắt đầu chạy test suite..."
             npm run send
 
       - name: Upload Allure Results
