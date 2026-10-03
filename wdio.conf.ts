@@ -1,4 +1,6 @@
 export const config: WebdriverIO.Config = {
+
+    
     runner: 'local',
     autoCompileOpts: {
         autoCompile: true,
@@ -21,6 +23,9 @@ export const config: WebdriverIO.Config = {
     'appium:noReset': true,   // Giữ nguyên trạng thái đã đăng nhập như trong hình
     'appium:fullReset': false,
 }],
+
+    
+
     logLevel: 'info',
     bail: 0,
     waitforTimeout: 10000,
@@ -28,9 +33,24 @@ export const config: WebdriverIO.Config = {
     connectionRetryCount: 3,
     services: ['appium'],
     framework: 'mocha',
-    reporters: ['spec'],
+    reporters: [
+        'spec',
+        ['allure', {
+            outputDir: 'allure-results',
+            disableWebdriverStepsReporting: true,
+            disableWebdriverScreenshotsReporting: false, // Cho phép đính kèm ảnh chụp màn hình khi test lỗi
+            useCucumberStepReporter: false,
+        }]
+    ],
     mochaOpts: {
         ui: 'bdd',
         timeout: 60000
     },
+
+    afterTest: async function (test, context, { error, result, duration, passed, retries }) {
+        if (!passed) {
+            await browser.takeScreenshot();
+        }
+    },
 };
+

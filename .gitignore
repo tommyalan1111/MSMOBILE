@@ -1,3 +1,5 @@
 node_modules
-
 .env
+allure-results
+allure-report
+.DS_Store
