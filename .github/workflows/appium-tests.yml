@@ -35,16 +35,30 @@ jobs:
       - name: Run Android Emulator & Tests
         uses: reactivecircus/android-emulator-runner@v2
         env:
-            TEST_WALLET_EMAIL: ${{ secrets.TEST_WALLET_EMAIL }}
-            TEST_WALLET_PASSWORD: ${{ secrets.TEST_WALLET_PASSWORD }}
+          TEST_WALLET_EMAIL: ${{ secrets.TEST_WALLET_EMAIL }}
+          TEST_WALLET_PASSWORD: ${{ secrets.TEST_WALLET_PASSWORD }}
         with:
           api-level: 29
           target: default
           arch: x86_64
           profile: pixel_4
           script: |
-            adb wait-device
-            adb install ./app/moonstake.apk 
+            echo "Đang chờ emulator khởi động hoàn tất..."
+            
+            # Vòng lặp chờ đến khi Android boot xong 100%
+            until adb shell getprop sys.boot_completed 2>&1 | grep -q "1"; do
+              sleep 5
+            done
+            
+            echo "Emulator đã sẵn sàng! Đang mở khóa màn hình..."
+            adb shell input keyevent 82
+            
+            # Cài đặt file APK của Moonstake Mobile
+            echo "Đang cài đặt app..."
+            adb install ./app/moonstake.apk
+            
+            # Chạy lệnh test WebdriverIO
+            echo "Bắt đầu chạy test suite..."
             npm run send
 
       - name: Upload Allure Results
